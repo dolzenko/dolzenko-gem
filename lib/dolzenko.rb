@@ -9,7 +9,7 @@ module Net
   autoload :HTTP, "net/http"
 end
 
-require "active_support"
+require "active_support/all"
 require "facets"
 
 require "require_gist"
