@@ -8,12 +8,12 @@ ENV["GEM_VERSION"] = new_version
 
 puts "Releasing #{ GEM_NAME } #{ new_version }"
 
-system "gem build #{ GEM_NAME }.gemspec"
+system "gem build #{ GEM_NAME }.gemspec --verbose"
 
-system "gem push #{ GEM_NAME }-#{ new_version }.gem"
+system "gem push #{ GEM_NAME }-#{ new_version }.gem --verbose"
 
 File.delete("#{ GEM_NAME }-#{ new_version }.gem")
 
 system "git push"
 
-system "gem install #{ GEM_NAME } --version=#{ new_version }"
+system "gem install #{ GEM_NAME } --version=#{ new_version } --remote --update-sources --verbose"
