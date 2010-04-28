@@ -1,6 +1,13 @@
 require "English"
-require "fileutils"
+require "yaml"
 require "open-uri"
+
+# These can be autoloaded consistently (i.e. define single constant)
+autoload :FileUtils, "fileutils"
+autoload :OptionParser, "optparse"
+module Net
+  autoload :HTTP, "net/http"
+end
 
 require "active_support"
 require "facets"
