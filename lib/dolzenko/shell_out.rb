@@ -166,7 +166,7 @@ module ShellOut
 
           loop do
             c = begin
-              r_pty.sysread(512)
+              r_pty.getc
             rescue Errno::EIO, EOFError
               nil
             end
