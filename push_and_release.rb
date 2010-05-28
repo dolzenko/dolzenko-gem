@@ -1,4 +1,7 @@
+require "syck"
 require "yaml"
+require "rubygems"
+require "rubygems/version"
 
 GEM_NAME = "dolzenko"
 

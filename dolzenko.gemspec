@@ -3,7 +3,7 @@ $:.unshift lib unless $:.include?(lib)
  
 Gem::Specification.new do |s|
   s.name        = "dolzenko"
-  s.version     = ENV["GEM_VERSION"]
+  s.version     = ENV["GEM_VERSION"].dup
   s.authors     = ["Evgeniy Dolzhenko"]
   s.email       = ["dolzenko@gmail.com"]
   s.homepage    = "http://github.com/dolzenko/dolzenko-gem"
