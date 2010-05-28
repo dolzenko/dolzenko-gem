@@ -15,7 +15,7 @@ module RemoteDownload
               "User-Agent" => "curl/7.14.0 (i586-pc-mingw32msvc) libcurl/7.14.0 zlib/1.2.2",
               "Host" => uri.host,
               "Accept" => "*/*",
-              "Referer" => SELFPORT,
+              "Referer" => "",
               })
       
       dputs("got response: #{ response }")
@@ -50,7 +50,7 @@ module RemoteDownload
               "User-Agent" => "curl/7.14.0 (i586-pc-mingw32msvc) libcurl/7.14.0 zlib/1.2.2",
               "Host" => uri.host,
               "Accept" => "text/html",
-              "Referer" => SELFPORT,
+              "Referer" => "",
               }
       )
     end

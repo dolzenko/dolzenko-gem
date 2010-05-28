@@ -95,7 +95,26 @@ module ShellOut
     end
 
     def command(*args)
-      (args.last.is_a?(Hash) ? args[0..-2] : args).join(" ")
+      stripped_command = args.dup
+      stripped_command.pop if stripped_command[-1].is_a?(Hash) # remove options
+      stripped_command.shift if stripped_command[0].is_a?(Hash) # remove env
+      stripped_command.join(" ")
+    end
+
+    def with_env(*args)
+      yield unless (env = args[0]).is_a?(Hash)
+      stored_env = {}
+      for name, value in env
+        stored_env[name] = ENV[name]
+        value == nil ? ENV.delete(name) : ENV[name] = value 
+      end
+      begin
+        yield
+      ensure
+        for name, value in stored_env
+          ENV[name] = value
+        end
+      end
     end
 
     def getopt(opt, default, *args)
@@ -115,56 +134,62 @@ module ShellOut
 
   def shell_out_with_pty(*args)
     old_state = `stty -g`
+    
     return SUCCESS_EXIT_STATUS unless ShellOut::before(*args)
 
-    # stolen from ruby/ext/pty/script.rb
-    # disable echoing and enable raw (not having to press enter)
-    system "stty -echo raw lnext ^_"
+    begin
+      # stolen from ruby/ext/pty/script.rb
+      # disable echoing and enable raw (not having to press enter)
+      system "stty -echo raw lnext ^_"
 
-    in_stream = ShellOut.getopt(:in, STDIN, *args)
-    out_stream = ShellOut.getopt(:out, STDOUT, *args)
+      in_stream = ShellOut.getopt(:in, STDIN, *args)
+      out_stream = ShellOut.getopt(:out, STDOUT, *args)
+      writer = nil
+      ShellOut.with_env(*args) do
+        PTY.spawn(ShellOut.command(*args)) do |r_pty, w_pty, pid|
+          reader = Thread.current
+          writer = Thread.new do
+            while true
+              break if (ch = in_stream.getc).nil?
+              ch = ch.chr
+              if ch == ShellOut::CTRL_C_CODE
+                reader.raise Interrupt, "Interrupted by user"
+              else
+                w_pty.print ch
+                w_pty.flush
+              end
+            end
+          end
+          writer.abort_on_exception = true
 
-    PTY.spawn(ShellOut.command(*args)) do |r_pty, w_pty, pid|
-      reader = Thread.current
-      writer = Thread.new do
-        while true
-          break if (ch = in_stream.getc).nil?
-          ch = ch.chr
-          if ch == ShellOut::CTRL_C_CODE
-            reader.raise Interrupt, "Interrupted by user"
-          else
-            w_pty.print ch
-            w_pty.flush
+          loop do
+            c = begin
+              r_pty.sysread(512)
+            rescue Errno::EIO, EOFError
+              nil
+            end
+            break if c.nil?
+
+            out_stream.print c
+            out_stream.flush
+          end
+
+          begin
+            # try to invoke waitpid() before the signal handler does it
+            return ShellOut::after(Process::waitpid2(pid)[1].exitstatus, out_stream, *args)
+          rescue Errno::ECHILD
+            # the signal handler managed to call waitpid() first;
+            # PTY::ChildExited will be delivered pretty soon, so just wait for it
+            sleep 1
           end
         end
       end
-      writer.abort_on_exception = true
-
-      loop do
-        c = begin
-          r_pty.sysread(512)
-        rescue Errno::EIO, EOFError
-          nil
-        end
-        break if c.nil?
-
-        out_stream.print c
-        out_stream.flush
-      end
-
-      begin
-        # try to invoke waitpid() before the signal handler does it
-        return ShellOut::after(Process::waitpid2(pid)[1].exitstatus, out_stream, *args)
-      rescue Errno::ECHILD
-        # the signal handler managed to call waitpid() first;
-        # PTY::ChildExited will be delivered pretty soon, so just wait for it
-        sleep 1
-      end
+    rescue PTY::ChildExited => e
+      return ShellOut::after(e.status.exitstatus, out_stream, *args)
+    ensure
+      writer && writer.kill
+      system "stty #{ old_state }"
     end
-  rescue PTY::ChildExited => e
-    return ShellOut::after(e.status.exitstatus, out_stream, *args)
-  ensure
-    system "stty #{ old_state }"
   end
 
   def shell_out_with_system(*args)
@@ -249,6 +274,12 @@ if $PROGRAM_NAME == __FILE__
         STDOUT.supress do # TODO still mystery why "testing\n" gets written to the output 
           ShellOut("ruby -e 'exit(123) if gets.chomp == \"testing\"'", :in => fake_stdin).should == 123
         end
+      end
+
+      it "alters command environment when first argument is a Hash" do
+        ShellOut({ "ENV_VAR" => "42" }, 
+                 "ruby -e 'puts ENV.inspect'",
+                 :out => :return).should include('"ENV_VAR"=>"42"')
       end
 
       describe ":raise_exceptions option" do

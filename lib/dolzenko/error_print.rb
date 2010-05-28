@@ -5,6 +5,10 @@
 class Exception
   require "English"
   
+  def error_print
+    self.class.error_print(self)
+  end
+  
   def self.error_print(e = $ERROR_INFO)
     warn_print = ""
     backtrace = e.backtrace
