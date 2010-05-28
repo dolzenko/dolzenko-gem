@@ -145,8 +145,10 @@ module ShellOut
       in_stream = ShellOut.getopt(:in, STDIN, *args)
       out_stream = ShellOut.getopt(:out, STDOUT, *args)
       writer = nil
+      spawned_pid = nil
       ShellOut.with_env(*args) do
         PTY.spawn(ShellOut.command(*args)) do |r_pty, w_pty, pid|
+          spawned_pid = pid
           reader = Thread.current
           writer = Thread.new do
             while true
@@ -187,7 +189,14 @@ module ShellOut
     rescue PTY::ChildExited => e
       return ShellOut::after(e.status.exitstatus, out_stream, *args)
     ensure
-      writer && writer.kill
+      if writer
+        writer.kill rescue nil
+      end
+
+      if spawned_pid
+        Process.kill(-9, spawned_pid) rescue nil
+      end
+
       system "stty #{ old_state }"
     end
   end
