@@ -1,3 +1,4 @@
+module Dolzenko
 module RemoteDownload
   # Returns IO object to be used with attachment_fu models, if retrieval fails - return nil
   def get_uploaded_data(url, follow_redirect = 2)
@@ -87,4 +88,5 @@ module RemoteDownload
 
     attr_accessor :content_type, :filename, :size, :original_filename
   end
+end
 end
