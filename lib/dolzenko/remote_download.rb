@@ -1,4 +1,5 @@
 module Dolzenko
+# Simple `Net::HTTP` mumbo jumbo we all have to use occasionally.
 module RemoteDownload
   # Returns IO object to be used with attachment_fu models, if retrieval fails - return nil
   def get_uploaded_data(url, follow_redirect = 2)

@@ -1,3 +1,5 @@
+# My attempt at abstracting `acts_as_*` pattern. Need to get rid of `InstanceMethods`
+# class to make it year 2010 compatible.
 class Class
   def acts_as(*args)
     modules_with_options = []

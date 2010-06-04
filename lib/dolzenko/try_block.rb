@@ -1,3 +1,5 @@
+# My attempt of [Guarded Evaluation](http://weblog.raganwald.com/2008/01/objectandand-objectme-in-ruby.html)
+# problem solution. Everyone has that :)
 module TryBlock
   def self.install!
     unless Object.include?(self)
