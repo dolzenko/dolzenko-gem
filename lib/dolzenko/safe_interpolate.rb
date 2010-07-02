@@ -4,6 +4,7 @@ require "cgi"
 
 module SafeInterpolate
   def generic_interpolate(string_block, interpolator)
+    raise ArgumentError, "block returning string to interpolate must be provided" unless string_block 
     string_with_interpolations = string_block.call
     string_with_interpolations.gsub(/\#\{([^}]*)\}/) do
       result = eval($1, string_block.binding)
@@ -11,6 +12,11 @@ module SafeInterpolate
     end
   end
 
+  # Examples
+  #
+  #     include SafeInterpolate
+  #     ...
+  #     sql_interpolate { 'name = #{ name }' } # => "name = 'Bob'"
   def sql_interpolate(&string_block)
     generic_interpolate(string_block, ActiveRecord::Base.connection.method(:quote))
   end
