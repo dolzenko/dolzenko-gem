@@ -2,6 +2,7 @@ require "active_support/all"
 require "active_record"
 require "cgi"
 
+# http://dolzhenko.org/blog/2010/07/safe-string-interpolation-in-ruby/
 module SafeInterpolate
   def generic_interpolate(string_block, interpolator)
     raise ArgumentError, "block returning string to interpolate must be provided" unless string_block 
