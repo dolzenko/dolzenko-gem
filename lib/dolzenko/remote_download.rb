@@ -1,3 +1,5 @@
+require "stringio"
+
 module Dolzenko
 # Simple `Net::HTTP` mumbo jumbo we all have to use occasionally.
 module RemoteDownload

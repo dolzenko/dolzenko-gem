@@ -9,3 +9,4 @@ autoload :OpenStruct, "ostruct"
 module Net
   autoload :HTTP, "net/http"
 end
+autoload :StringIO, "stringio"
