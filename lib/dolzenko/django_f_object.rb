@@ -28,7 +28,7 @@
 #
 #
 
-require "require_gist"; require_gist "383954/ea5a41269aac073b596b21fe392098827186a32b/alias_method_chain_once.rb", "a6f068593bb45fe6c9956205f672ac4a0c2e1671" # http://gist.github.com/383954
+require "dolzenko/alias_method_chain_once.rb"
 
 class F
   attr_accessor :attr_name
