@@ -1,4 +1,7 @@
 # Django Q object for Rails 2, 3
+#
+# http://dolzhenko.org/blog/2010/07/django-f-and-q-objects-for-rails/
+#
 # http://docs.djangoproject.com/en/dev/topics/db/queries/#complex-lookups-with-q-objects
 #
 # Let's you build ORed, ANDed, and negated conditions without dropping to
