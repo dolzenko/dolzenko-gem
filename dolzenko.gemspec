@@ -10,5 +10,5 @@ Gem::Specification.new do |s|
   s.summary     = "Tiny meta gem which makes dolzenko happy"
   s.files       = Dir.glob("lib/**/*") + %w(dolzenko.gemspec)
   s.add_dependency("facets", "2.8.3")
-  s.add_dependency("activesupport", "3.0.0.beta3")
+  s.add_dependency("activesupport", "3.0.0.beta4")
 end

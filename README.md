@@ -2,7 +2,11 @@
 
 These are various bits and pieces I've extracted from the application I worked
 on which were copied just too many times, but yet too small to be in the
-separate gems. 
+separate gems.
+
+### `require "dolzenko/django_q_object"`; `require "dolzenko/django_f_object"` 
+
+[Django F() And Q() Objects For Rails](http://dolzhenko.org/blog/2010/07/django-f-and-q-objects-for-rails/)
 
 ### `require "dolzenko/shell_out"`
 
