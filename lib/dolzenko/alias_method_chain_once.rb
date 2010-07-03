@@ -1,3 +1,5 @@
+require "active_support/core_ext/module/aliasing"
+
 # *Correct* `alias_method_chain_once` implementation
 class Module
   def alias_method_chain_once(target, feature)
